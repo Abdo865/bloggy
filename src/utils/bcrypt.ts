@@ -5,6 +5,7 @@ export async function encode(password: string): Promise<string> {
   const hash = await bcrypt.hash(password, salt);
 
   return hash;
+
 }
 
 export async function compare(

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/utils/prisma.service';
-import { CreateUserDto } from './dto/CreateUser.dto';
+import { CreateUserDto } from './dto/user.dto';
 import { encode } from 'src/utils/bcrypt';
 // import * as  from '../utils/bcrypt';
 
@@ -16,7 +16,7 @@ export class UsersService {
     return await this.prismaService.user.findFirst({ where: { id } });
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
+  async getUserByUsername(username: string): Promise<User | null> {
     return await this.prismaService.user.findFirst({ where: { username } });
   }
 

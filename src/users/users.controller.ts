@@ -5,34 +5,34 @@ import {
   Get,
   Param,
   Post,
+  UseGuards,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { SerializedUser } from './serialized-types/serialized-user';
-import { CreateUserDto } from './dto/CreateUser.dto';
+import { CreateUserDto } from './dto/user.dto';
+import { JwtAuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @UseInterceptors(ClassSerializerInterceptor)
   async getUsers() {
     return (await this.usersService.getUsers()).map(
       (user) => new SerializedUser(user),
     );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('id/:id')
-  @UseInterceptors(ClassSerializerInterceptor)
   async getUserById(@Param('id') id: string) {
-    return new SerializedUser(await this.usersService.getUserById(id));
+    const user = await this.usersService.getUserById(id);
+    return new SerializedUser(user);
   }
 
   @Get('username/:username')
-  @UseInterceptors(ClassSerializerInterceptor)
   async getUserByUsername(@Param('username') username: string) {
     return new SerializedUser(
       await this.usersService.getUserByUsername(username),
@@ -40,8 +40,6 @@ export class UsersController {
   }
 
   @Post('create')
-  @UsePipes(ValidationPipe)
-  @UseInterceptors(ClassSerializerInterceptor)
   async createUser(@Body() createUserDto: CreateUserDto) {
     return new SerializedUser(
       await this.usersService.createUser(createUserDto),
@@ -49,8 +47,6 @@ export class UsersController {
   }
 
   @Post('update')
-  @UsePipes(ValidationPipe)
-  @UseInterceptors(ClassSerializerInterceptor)
   async updateUser(@Body() createUserDto: CreateUserDto) {
     return new SerializedUser(
       await this.usersService.updateUser(createUserDto),

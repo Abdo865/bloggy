@@ -10,6 +10,9 @@ export class SerializedUser {
   id: string;
 
   @Exclude()
+  name: string;
+
+  @Exclude()
   password: string;
 
   constructor(partial: Partial<User>) {
