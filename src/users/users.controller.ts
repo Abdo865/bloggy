@@ -9,9 +9,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { SerializedUser } from './serialized-types/serialized-user';
 import { CreateUserDto } from './dto/user.dto';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
+import { SerializedUser } from './serialized-types/serialized-user';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -33,6 +33,7 @@ export class UsersController {
   }
 
   @Get('username/:username')
+  @UseGuards(JwtAuthGuard)
   async getUserByUsername(@Param('username') username: string) {
     return new SerializedUser(
       await this.usersService.getUserByUsername(username),

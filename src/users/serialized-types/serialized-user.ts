@@ -2,12 +2,10 @@ import { User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 
 export class SerializedUser {
+  id: string;
   full_name: string;
   username: string;
   email: string;
-
-  @Exclude()
-  id: string;
 
   @Exclude()
   name: string;
