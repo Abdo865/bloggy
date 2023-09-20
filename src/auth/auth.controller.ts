@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/utils/custome-decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +18,8 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   @UseInterceptors(ClassSerializerInterceptor)
-  login(@Request() req) {
-    return this.authService.login(req.user);
+  login(@Request() req, @GetUser() user) {
+    return this.authService.login(user);
   }
 
   @Post('logout')

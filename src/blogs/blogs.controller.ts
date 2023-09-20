@@ -16,7 +16,8 @@ import {
 import { BlogsService } from './blogs.service';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { SerializedBlog } from './serialized-types/serialized-blog';
-import { BlogDto } from './dto/blog.dto';
+import { CreateBlogDto, UpdateBlogDto } from './dto/blog.dto';
+import { GetUser } from 'src/utils/custome-decorators';
 
 @Controller('blogs')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -45,19 +46,23 @@ export class BlogsController {
 
   @Post('create')
   @UsePipes(ValidationPipe)
-  async createBlog(@Body() blogDto: BlogDto, @Req() req) {
-    const userId = req.user.userId;
-    blogDto.authorId = userId;
-    return new SerializedBlog(await this.blogService.createBlog(blogDto));
+  async createBlog(
+    @Body() createBlogDto: CreateBlogDto,
+    @Req() req,
+    @GetUser('userId') userId,
+  ) {
+    createBlogDto.authorId = userId;
+    return new SerializedBlog(await this.blogService.createBlog(createBlogDto));
   }
 
-  @Put('update')
-  async update(@Body() blogDto: BlogDto) {
-    this.blogService.update(blogDto);
+  @Put('update/:id')
+  async update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
+    updateBlogDto.blogId = id;
+    return this.blogService.updateBlog(updateBlogDto);
   }
 
   @Delete('delete/:id')
   async delete(@Param('id') id: string) {
-    await this.delete(id);
+    return await this.blogService.deleteBlog(id);
   }
 }

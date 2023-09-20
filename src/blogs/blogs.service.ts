@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BlogDto } from './dto/blog.dto';
+import { CreateBlogDto, UpdateBlogDto } from './dto/blog.dto';
 import { PrismaService } from 'src/utils/prisma.service';
 import { Blog } from '@prisma/client';
 
@@ -9,6 +9,7 @@ export class BlogsService {
 
   async getBlogs(): Promise<Blog[]> {
     const allBlogs = await this.prismaService.blog.findMany();
+
     return allBlogs;
   }
 
@@ -16,6 +17,7 @@ export class BlogsService {
     const blog = await this.prismaService.blog.findFirstOrThrow({
       where: { id },
     });
+
     return blog;
   }
 
@@ -23,21 +25,30 @@ export class BlogsService {
     const blogs = await this.prismaService.blog.findMany({
       where: { title: { contains: title } },
     });
+
     return blogs;
   }
 
-  async createBlog(blogDto: BlogDto): Promise<Blog> {
-    const createdBlog = await this.prismaService.blog.create({ data: blogDto });
+  async createBlog(createBlogDto: CreateBlogDto): Promise<Blog> {
+    const createdBlog = await this.prismaService.blog.create({
+      data: createBlogDto,
+    });
+
     return createdBlog;
   }
 
-  async updateBlog(blogDto: BlogDto) {
-    const updatedBlog = { ...blogDto };
-    this.prismaService.blog.update({ where: {} });
+  async updateBlog(updateBlogDto: UpdateBlogDto) {
+    const updatedBlog = await this.prismaService.blog.update({
+      where: { id: updateBlogDto.blogId },
+      data: { title: updateBlogDto.title, content: updateBlogDto.content },
+    });
+
+    return updatedBlog;
   }
 
   async deleteBlog(id: string) {
     const deletedBlog = await this.prismaService.blog.delete({ where: { id } });
+
     return deletedBlog;
   }
 }
